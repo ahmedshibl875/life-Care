@@ -1,0 +1,7 @@
+{
+    "_comment": "ضع هنا MAC Address أو UUID الخاص بجهاز ESP32 Life Care",
+    "deviceAddress": "REPLACE_WITH_YOUR_MAC",
+    "deviceName": "Life Care",
+    "wsPort": 8765,
+    "reconnectDelay": 3000
+}

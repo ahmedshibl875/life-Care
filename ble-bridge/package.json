@@ -1,0 +1,13 @@
+{
+    "name": "lifecare-ble-bridge",
+    "version": "1.0.0",
+    "description": "BLE WebSocket bridge for Life Care ESP32-C3 device — enables Safari & all browsers",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "@abandonware/noble": "^1.9.2-21",
+        "ws": "^8.16.0"
+    }
+}
