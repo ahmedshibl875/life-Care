@@ -56,7 +56,7 @@ export default function Profile({ role, lang }) {
         }
 
         try {
-            const res = await fetch('http://localhost:5000/api/actions/profile', {
+            const res = await fetch('https://life-care-production.up.railway.app/api/actions/profile', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -128,7 +128,7 @@ export default function Profile({ role, lang }) {
         setMessage({ type: '', text: '' });
         
         try {
-            const res = await fetch('http://localhost:5000/api/actions/profile', {
+            const res = await fetch('https://life-care-production.up.railway.app/api/actions/profile', {
                 method: 'PUT',
                 headers: { 
                     'Authorization': `Bearer ${token}`,

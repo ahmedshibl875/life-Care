@@ -34,7 +34,7 @@ export default function Doctors() {
         }
 
         // Fetch user's connected doctors
-        fetch('http://localhost:5000/api/connections/get_patient_doctors', {
+        fetch('https://life-care-production.up.railway.app/api/connections/get_patient_doctors', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => res.json())
@@ -52,7 +52,7 @@ export default function Doctors() {
             }).catch(err => console.error(err));
 
         // Fetch all platform doctors
-        fetch('http://localhost:5000/api/patient/doctors-list', {
+        fetch('https://life-care-production.up.railway.app/api/patient/doctors-list', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => res.json())
@@ -70,7 +70,7 @@ export default function Doctors() {
         setVerifiedDoctor(null);
 
         try {
-            const res = await fetch(`http://localhost:5000/api/connections/verify_doctor/${doctorIdInput}`, {
+            const res = await fetch(`https://life-care-production.up.railway.app/api/connections/verify_doctor/${doctorIdInput}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -97,7 +97,7 @@ export default function Doctors() {
         setSearchMessage('');
 
         try {
-            const res = await fetch('http://localhost:5000/api/connections/send_follow_request', {
+            const res = await fetch('https://life-care-production.up.railway.app/api/connections/send_follow_request', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ export default function Doctors() {
                 return;
             }
 
-            const res = await fetch(`http://localhost:5000/api/connections/end_follow_up/${doc.connId}`, {
+            const res = await fetch(`https://life-care-production.up.railway.app/api/connections/end_follow_up/${doc.connId}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

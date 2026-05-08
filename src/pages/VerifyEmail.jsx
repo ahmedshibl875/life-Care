@@ -28,7 +28,7 @@ export default function VerifyEmail({ lang }) {
     useEffect(() => {
         const verify = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/auth/verify-email/${token}`);
+                const res = await fetch(`https://life-care-production.up.railway.app/api/auth/verify-email/${token}`);
                 const data = await res.json();
 
                 if (res.ok) {

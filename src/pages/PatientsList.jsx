@@ -33,7 +33,7 @@ export default function PatientsList() {
             return;
         }
 
-        fetch('http://localhost:5000/api/connections/get_doctor_patients', {
+        fetch('https://life-care-production.up.railway.app/api/connections/get_doctor_patients', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => res.json())
@@ -67,7 +67,7 @@ export default function PatientsList() {
                 return;
             }
 
-            const res = await fetch(`http://localhost:5000/api/connections/${action}_follow_request/${connId}`, {
+            const res = await fetch(`https://life-care-production.up.railway.app/api/connections/${action}_follow_request/${connId}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
