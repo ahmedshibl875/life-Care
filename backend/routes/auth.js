@@ -41,22 +41,20 @@ const registerSchema = Joi.object({
         'string.min': 'كلمة المرور يجب أن تتكون من 8 أحرف على الأقل.',
         'string.pattern.base': 'كلمة المرور يجب أن تحتوي على الأقل على حرف واحد ورقم واحد.'
     }),
-    date_of_birth: Joi.date().max('now').required().messages({
-        'date.max': 'تاريخ الميلاد لا يمكن أن يكون في المستقبل.',
-        'any.required': 'تاريخ الميلاد مطلوب.'
+    date_of_birth: Joi.date().max('now').allow('', null).optional().messages({
+        'date.max': 'تاريخ الميلاد لا يمكن أن يكون في المستقبل.'
     }),
-    disease: Joi.string().valid('السكري', 'ضغط الدم', 'أمراض القلب', 'الربو', 'لا يوجد', 'أخرى').required().messages({
-        'any.only': 'يرجى اختيار مرض صحيح من القائمة.',
-        'any.required': 'المرض مطلوب.'
+    disease: Joi.string().valid('السكري', 'ضغط الدم', 'أمراض القلب', 'الربو', 'لا يوجد', 'أخرى').allow('', null).optional().messages({
+        'any.only': 'يرجى اختيار مرض صحيح من القائمة.'
     }),
     phone: Joi.string().pattern(/^[0-9]+$/).required().messages({
         'string.empty': 'رقم الهاتف مطلوب.',
         'string.pattern.base': 'رقم الهاتف يجب أن يحتوي على أرقام فقط.'
     }),
-    companion_phone: Joi.string().pattern(/^[0-9]+$/).required().messages({
-        'string.empty': 'رقم هاتف المرافق مطلوب.',
+    companion_phone: Joi.string().pattern(/^[0-9]+$/).allow('', null).optional().messages({
         'string.pattern.base': 'رقم الهاتف يجب أن يحتوي على أرقام فقط.'
-    })
+    }),
+    role: Joi.string().valid('patient', 'companion', 'doctor').optional().default('patient')
 });
 
 // Register Endpoint
@@ -85,8 +83,8 @@ router.post('/register', async (req, res) => {
             date_of_birth: value.date_of_birth,
             disease: value.disease,
             phone: value.phone,
-            companion_phone: value.companion_phone,
-            role: 'patient',
+            companion_phone: value.companion_phone || '',
+            role: value.role || 'patient',
             isVerified: false,
             otp,
             otpExpires
@@ -173,6 +171,18 @@ router.post('/verify-otp', async (req, res) => {
     }
 });
 
+// Resend Verification OTP Endpoint
+router.post('/resend-verification', async (req, res) => {
+    try {
+        // Since we are mocking OTPs for now, we'll just return success.
+        // In reality, you'd find the user by email from a logged-in state or request body,
+        // generate a new OTP, save it, and email it.
+        res.status(200).json({ message: 'تم إرسال الرمز الجديد بنجاح.' });
+    } catch (err) {
+        res.status(500).json({ error: 'حدث خطأ داخلي في الخادم.' });
+    }
+});
+
 // Login Endpoint
 router.post('/login', loginLimiter, async (req, res) => {
     try {
@@ -221,23 +231,24 @@ router.post('/forgot-password', async (req, res) => {
 
         if (!user) return res.status(400).json({ error: 'لا يوجد حساب بهذا البريد الإلكتروني.' });
 
-        const resetToken = crypto.randomBytes(32).toString('hex');
+        // Generate a 6-digit OTP for Mobile App Reset
+        const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
         await user.save();
 
-        const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
         const mailOptions = {
             from: process.env.EMAIL_USER || 'no-reply@lifecare.com',
             to: user.email,
-            subject: 'إعادة تعيين كلمة المرور - Life Care',
+            subject: 'رمز إعادة تعيين كلمة المرور - Life Care',
             html: `<h3>مرحباً ${user.full_name}،</h3>
-                   <p>لقد طلبت إعادة تعيين كلمة المرور. اضغط على الرابط أدناه:</p>
-                   <a href="${resetUrl}">إعادة تعيين كلمة المرور</a>`
+                   <p>لقد طلبت إعادة تعيين كلمة المرور الخاصة بك. يرجى إدخال الرمز المكون من 6 أرقام داخل تطبيق الموبايل:</p>
+                   <h2>${resetToken}</h2>
+                   <p>هذا الرمز صالح لمدة ساعة واحدة فقط.</p>`
         };
 
         console.log(`\n===========================================`);
-        console.log(`🔗 [DEBUG MODE] Reset Password Link: ${resetUrl}`);
+        console.log(`🔑 [DEBUG MODE] Password Reset OTP: ${resetToken}`);
         console.log(`===========================================\n`);
 
         transporter.sendMail(mailOptions).catch(err => {
