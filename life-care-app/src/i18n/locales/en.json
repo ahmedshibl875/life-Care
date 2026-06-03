@@ -1,0 +1,38 @@
+{
+  "translation": {
+    "dashboard": {
+      "title": "Dashboard",
+      "heartRate": "Heart Rate",
+      "oxygen": "SpO2",
+      "temperature": "Temperature",
+      "bloodPressure": "Blood Pressure",
+      "deviceStatus": "Device Status",
+      "battery": "Battery",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "offlineWarning": "Device Offline",
+      "lastSync": "Last Sync",
+      "loading": "Loading..."
+    },
+    "timeline": {
+      "title": "Timeline",
+      "addNote": "Add Note",
+      "noEvents": "No events recorded.",
+      "alert": "Alert",
+      "note": "Note",
+      "system": "System"
+    },
+    "settings": {
+      "title": "Settings",
+      "language": "Language",
+      "theme": "Theme",
+      "logout": "Logout"
+    },
+    "common": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "error": "An error occurred",
+      "success": "Success"
+    }
+  }
+}

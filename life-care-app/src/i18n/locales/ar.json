@@ -1,0 +1,38 @@
+{
+  "translation": {
+    "dashboard": {
+      "title": "لوحة التحكم",
+      "heartRate": "نبض القلب",
+      "oxygen": "الأكسجين",
+      "temperature": "الحرارة",
+      "bloodPressure": "ضغط الدم",
+      "deviceStatus": "حالة الجهاز",
+      "battery": "البطارية",
+      "connected": "متصل",
+      "disconnected": "غير متصل",
+      "offlineWarning": "الجهاز غير متصل",
+      "lastSync": "آخر مزامنة",
+      "loading": "جاري التحميل..."
+    },
+    "timeline": {
+      "title": "السجل الزمني",
+      "addNote": "إضافة ملاحظة",
+      "noEvents": "لا توجد أحداث مسجلة.",
+      "alert": "تنبيه",
+      "note": "ملاحظة",
+      "system": "نظام"
+    },
+    "settings": {
+      "title": "الإعدادات",
+      "language": "اللغة",
+      "theme": "المظهر",
+      "logout": "تسجيل الخروج"
+    },
+    "common": {
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "error": "حدث خطأ",
+      "success": "نجاح"
+    }
+  }
+}

@@ -29,12 +29,18 @@ const apiRoutes = require('./routes/api');
 const uploadRoutes = require('./routes/upload');
 const { router: notificationRoutes } = require('./routes/notifications');
 const connectionRoutes = require('./routes/connections');
+const alertRoutes = require('./routes/alerts');
+const noteRoutes = require('./routes/notes');
+const reportsRoutes = require('./routes/reports');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/actions', apiRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/connections', connectionRoutes);
+app.use('/api/alerts', alertRoutes);
+app.use('/api/notes', noteRoutes);
+app.use('/api/reports', reportsRoutes);
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/lifecare', {
