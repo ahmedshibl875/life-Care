@@ -19,6 +19,7 @@ export default function LoginScreen() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    console.log('[DEBUG] Login submitted with:', { email: data.email.toLowerCase() });
     setIsLoading(true);
     try {
       // API call using Axios instance
@@ -27,12 +28,24 @@ export default function LoginScreen() {
         password: data.password,
       });
 
+      console.log('[DEBUG] Login response received:', { status: response.status, hasToken: !!response.data?.token });
+
       if (response.data.token) {
+        console.log('[DEBUG] Saving user session and redirecting...');
         // Save using Zustand + SecureStore
         await login(response.data.token, response.data.user || { id: '0', name: 'Patient', email: data.email, role: 'patient' });
+      } else {
+        console.warn('[DEBUG] No token received in response:', response.data);
+        Alert.alert('خطأ في تسجيل الدخول', 'لم يتم استلام رمز المصادقة من الخادم.');
       }
     } catch (error: any) {
-      Alert.alert('Login Failed', error.response?.data?.message || 'Invalid credentials or server error.');
+      console.error('[DEBUG] Login failed with error:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+      });
+      const serverErrorMessage = error.response?.data?.error || error.response?.data?.message || 'عذراً، تعذر الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.';
+      Alert.alert('فشل تسجيل الدخول', serverErrorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -15,58 +15,91 @@ export default function OTPScreen() {
 
   const handleVerify = async () => {
     if (otp.length < 6) {
-      Alert.alert('Error', 'Please enter a valid 6-digit OTP');
+      Alert.alert('خطأ', 'الرجاء إدخال رمز التحقق المكون من 6 أرقام');
       return;
     }
 
+    console.log('[DEBUG] OTP Verification started with:', { email: params.email, otp });
     setIsLoading(true);
     try {
-      // Clean phone number (backend requires ^[0-9]+$)
       const cleanPhone = (params.phone as string || '').replace(/[^0-9]/g, '');
       const email = (params.email as string || '').toLowerCase();
 
-      // Format disease and fallback if invalid
       const validDiseases = ['السكري', 'ضغط الدم', 'أمراض القلب', 'الربو', 'لا يوجد', 'أخرى'];
       const rawDisease = params.medicalConditions as string;
       const disease = validDiseases.includes(rawDisease) ? rawDisease : 'لا يوجد';
 
       // 1. Call register first since the frontend didn't call it in register.tsx
+      console.log('[DEBUG] Registering user in backend first...');
       try {
-        await apiClient.post('/auth/register', {
+        const regRes = await apiClient.post('/auth/register', {
           name: params.name,
           email: email,
           phone: cleanPhone || '0000000000',
-          companion_phone: cleanPhone || '0000000000', // fallback to same phone
+          companion_phone: cleanPhone || '0000000000',
           password: params.password,
-          date_of_birth: params.dob || '2000-01-01', // fallback valid date
+          date_of_birth: params.dob || '2000-01-01',
           disease: disease,
           role: params.role || 'patient',
         });
+        console.log('[DEBUG] Registration response received:', regRes.data);
       } catch (regError: any) {
-        // If the error is that the email already exists, we can proceed to verify OTP
+        console.warn('[DEBUG] Registration call encountered error:', {
+          status: regError.response?.status,
+          data: regError.response?.data,
+        });
         const errMsg = regError.response?.data?.error || '';
         const errList = regError.response?.data?.errors || [];
-        if (!errMsg.includes('مسجل بالفعل') && !errMsg.includes('already exists')) {
-            throw regError; // rethrow if it's a different error
+        const isAlreadyRegistered = errMsg.includes('مسجل بالفعل') || errMsg.includes('already exists') || errList.some((e: string) => e.includes('already exists') || e.includes('مسجل بالفعل'));
+        
+        if (!isAlreadyRegistered) {
+          throw regError; // rethrow if it is a validation or connection error
         }
+        console.log('[DEBUG] User is already registered, continuing to OTP verification.');
       }
 
       // 2. Verify OTP
+      console.log('[DEBUG] Verifying OTP...');
       const verifyResponse = await apiClient.post('/auth/verify-otp', {
         email: email,
         otp: otp
       });
+      console.log('[DEBUG] OTP verification response received:', verifyResponse.data);
 
-      Alert.alert('Success', 'Account verified successfully! You can now login.', [
-        { text: 'OK', onPress: () => router.replace('/(auth)/login') }
+      Alert.alert('تم بنجاح', 'تم تأكيد الحساب بنجاح! يمكنك الآن تسجيل الدخول.', [
+        { text: 'موافق', onPress: () => router.replace('/(auth)/login') }
       ]);
       
     } catch (error: any) {
-      console.log('Error data:', error.response?.data);
+      console.error('[DEBUG] Verification failed with error:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+      });
       const serverError = error.response?.data?.error;
       const serverErrors = error.response?.data?.errors;
-      const errorMessage = serverError || (serverErrors && serverErrors.join('\n')) || error.message || 'Server error. Please try again later.';
-      Alert.alert('Verification Failed', errorMessage);
+      const errorMessage = serverError || (serverErrors && serverErrors.join('\n')) || error.message || 'عذراً، فشل التحقق من الرمز.';
+      Alert.alert('فشل التأكيد', errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    const email = (params.email as string || '').toLowerCase();
+    console.log('[DEBUG] Requesting resend verification code for:', email);
+    setIsLoading(true);
+    try {
+      const response = await apiClient.post('/auth/resend-verification', { email });
+      console.log('[DEBUG] Resend verification code response:', response.data);
+      Alert.alert('تم الإرسال', response.data.message || 'تم إعادة إرسال رمز التحقق بنجاح.');
+    } catch (error: any) {
+      console.error('[DEBUG] Resending code failed with error:', {
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+      const serverError = error.response?.data?.error || 'تعذر إعادة إرسال الرمز.';
+      Alert.alert('فشل إعادة الإرسال', serverError);
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +139,7 @@ export default function OTPScreen() {
             {isLoading ? <ActivityIndicator color="#ffffff" /> : <Text className="text-white text-lg font-bold">Verify & Create Account</Text>}
           </TouchableOpacity>
           
-          <TouchableOpacity className="items-center mt-4">
+          <TouchableOpacity onPress={handleResend} disabled={isLoading} className="items-center mt-4">
             <Text className="text-blue-600 font-semibold">Resend Code</Text>
           </TouchableOpacity>
         </View>

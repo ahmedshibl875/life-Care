@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const AlertEvent = require('../models/AlertEvent');
-const { protect } = require('../middleware/auth');
+const { protect } = require('../middleware/authMiddleware');
 
 // Create a new alert
 router.post('/', protect, async (req, res) => {

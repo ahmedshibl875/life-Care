@@ -35,6 +35,10 @@ apiClient.interceptors.response.use(
   async (error) => {
     const config = error.config;
     
+    if (!config) {
+      return Promise.reject(error);
+    }
+
     // Auto-Logout or token expiration warning on 401
     if (error.response?.status === 401) {
       console.warn('Unauthorized access. Token might be expired.');
@@ -42,21 +46,30 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Network Retry Logic for Mobile Stability
-    if (!config || !config.retry) {
-      config.retry = 0;
-    }
-    
+    // Retrieve the current retry count from the custom header (Axios preserves custom headers in config)
+    const retryHeader = config.headers?.['X-Retry-Count'];
+    let retryCount = retryHeader ? parseInt(String(retryHeader), 10) : 0;
+
     // Check if we should retry (network errors or 5xx server errors)
     const shouldRetry = !error.response || (error.response.status >= 500 && error.response.status <= 599);
     
-    if (shouldRetry && config.retry < ENV.MAX_RETRIES) {
-      config.retry += 1;
-      console.log(`Network request failed. Retrying... (${config.retry}/${ENV.MAX_RETRIES})`);
+    // Safety rules: Only retry idempotent GET requests that are not authentication requests
+    const isIdempotent = config.method?.toLowerCase() === 'get';
+    const isAuthRequest = config.url?.includes('/auth/');
+    
+    if (shouldRetry && isIdempotent && !isAuthRequest && retryCount < ENV.MAX_RETRIES) {
+      retryCount += 1;
+      console.log(`[API CLIENT] Network request failed. Retrying ${config.url} (${retryCount}/${ENV.MAX_RETRIES})...`);
       
       // Exponential backoff
-      const delay = new Promise((resolve) => setTimeout(resolve, config.retry * 1000));
+      const delay = new Promise((resolve) => setTimeout(resolve, retryCount * 1000));
       await delay;
+      
+      // Attach the incremented retry count to headers so it is preserved in the next interceptor execution
+      if (!config.headers) {
+        config.headers = {} as any;
+      }
+      config.headers['X-Retry-Count'] = String(retryCount);
       
       return apiClient(config);
     }
