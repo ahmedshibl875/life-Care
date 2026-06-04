@@ -125,8 +125,8 @@ export default function ReportsScreen() {
                 backgroundGradientFrom: "#ffffff",
                 backgroundGradientTo: "#ffffff",
                 decimalPlaces: 0,
-                color: (opacity = 1) => \`rgba(239, 68, 68, \${opacity})\`,
-                labelColor: (opacity = 1) => \`rgba(100, 116, 139, \${opacity})\`,
+                color: (opacity = 1) => `rgba(239, 68, 68, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(100, 116, 139, ${opacity})`,
                 style: { borderRadius: 16 },
                 propsForDots: { r: "5", strokeWidth: "2", stroke: "#EF4444" }
               }}
@@ -149,8 +149,8 @@ export default function ReportsScreen() {
                 backgroundGradientFrom: "#ffffff",
                 backgroundGradientTo: "#ffffff",
                 decimalPlaces: 0,
-                color: (opacity = 1) => \`rgba(16, 185, 129, \${opacity})\`,
-                labelColor: (opacity = 1) => \`rgba(100, 116, 139, \${opacity})\`,
+                color: (opacity = 1) => `rgba(16, 185, 129, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(100, 116, 139, ${opacity})`,
                 style: { borderRadius: 16 },
                 propsForDots: { r: "5", strokeWidth: "2", stroke: "#10B981" }
               }}

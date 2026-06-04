@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
-import { I18nManager } from 'react-native';
+import { I18nManager, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Updates from 'expo-updates';
 
@@ -16,18 +16,31 @@ const resources = {
 };
 
 export const initI18n = async () => {
-  const savedLanguage = await AsyncStorage.getItem(LANGUAGE_KEY);
-  // Default to device language or fallback to ar (since it's an Arabic primary app based on previous files)
-  const deviceLanguage = Localization.getLocales()[0]?.languageCode === 'en' ? 'en' : 'ar';
+  let savedLanguage = null;
+  let deviceLanguage = 'ar';
+
+  if (Platform.OS !== 'web' || typeof window !== 'undefined') {
+    try {
+      savedLanguage = await AsyncStorage.getItem(LANGUAGE_KEY);
+      deviceLanguage = Localization.getLocales()[0]?.languageCode === 'en' ? 'en' : 'ar';
+    } catch (e) {
+      console.warn('Error getting language settings:', e);
+    }
+  }
   
   const currentLanguage = savedLanguage || deviceLanguage;
 
   const isRTL = currentLanguage === 'ar';
   
-  // Force RTL natively if needed before i18n init
-  if (I18nManager.isRTL !== isRTL) {
-    I18nManager.allowRTL(isRTL);
-    I18nManager.forceRTL(isRTL);
+  if (Platform.OS !== 'web' || typeof window !== 'undefined') {
+    try {
+      if (I18nManager.isRTL !== isRTL) {
+        I18nManager.allowRTL(isRTL);
+        I18nManager.forceRTL(isRTL);
+      }
+    } catch (e) {
+      console.warn('Error setting RTL:', e);
+    }
   }
 
   await i18n
