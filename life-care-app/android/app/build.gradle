@@ -9,9 +9,9 @@ apply plugin: "com.facebook.react"
 react {
     /* Folders */
     // The root of your project, i.e. where "package.json" lives. Default is '../..'
-    root = file("../")
+    root = file("../../")
     // The entry file for bundle generation. Default is 'index.android.js' or 'index.js'
-    entryFile = file("../index.js")
+    entryFile = file("../../index.js")
     
     autolinkLibrariesWithApp()
 }
