@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, FlatList, TextInput, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, Platform } from 'react-native';
 import { useAuthStore } from '../../src/store/authStore';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../../src/api/client';
 import { Card } from '../../src/components/Card';

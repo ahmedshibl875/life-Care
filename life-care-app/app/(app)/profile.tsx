@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
+import Header from '../../src/components/Header';
+import * as ImagePicker from 'react-native-image-picker';
+import { Image } from 'react-native';
 import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Platform, Alert } from 'react-native';
 import { useAuthStore } from '../../src/store/authStore';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Card } from '../../src/components/Card';
 import { Button } from '../../src/components/Button';
 import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
+  const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const { user, logout } = useAuthStore();
   const router = useRouter();
   const [isRtl, setIsRtl] = useState(false); // Can be linked to global language state later
@@ -43,7 +47,29 @@ export default function ProfileScreen() {
         
         {/* Profile Header */}
         <View className="items-center mb-8 mt-4">
-          <View className="w-24 h-24 bg-blue-100 rounded-full items-center justify-center mb-4 border-4 border-white shadow-sm">
+        <Header />
+          <TouchableOpacity onPress={async () => {
+              const result = await ImagePicker.launchImageLibrary({
+                mediaType: 'photo',
+                includeBase64: false,
+                maxHeight: 800,
+                maxWidth: 800,
+                selectionLimit: 1,
+              });
+              if (result.didCancel) {
+                // cancelled
+              } else if (result.assets && result.assets.length > 0) {
+                setAvatarUri(result.assets[0].uri);
+              }
+            }} className="w-24 h-24 rounded-full overflow-hidden mb-4 border-4 border-white shadow-sm">
+            {avatarUri ? (
+              <Image source={{ uri: avatarUri }} className="w-full h-full" />
+            ) : (
+              <View className="w-24 h-24 bg-blue-100 rounded-full items-center justify-center">
+                <Ionicons name="person" size={48} color="#2563EB" />
+              </View>
+            )}
+          </TouchableOpacity>
             <Ionicons name="person" size={48} color="#2563EB" />
           </View>
           <Text className="text-2xl font-bold text-slate-800">{user?.name || 'User Name'}</Text>

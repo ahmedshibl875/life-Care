@@ -2,7 +2,7 @@ name: Build Android APK
 on:
   push:
     branches:
-      - main # أو استبدلها بـ master لو ده اسم الفرع الرئيسي عندك
+      - main
 
 jobs:
   build:
@@ -27,11 +27,12 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install dependencies
+        working-directory: life-care-app
         run: npm install
 
       - name: Build Android Release APK
+        working-directory: life-care-app/android
         run: |
-          cd android
           chmod +x gradlew
           ./gradlew assembleRelease
 
@@ -39,4 +40,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: life-care-app/android/app/build/outputs/apk/release/app-release.apk

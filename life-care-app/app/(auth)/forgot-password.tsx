@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, Alert, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Button } from '../../src/components/Button';
 import { apiClient } from '../../src/api/client';
 

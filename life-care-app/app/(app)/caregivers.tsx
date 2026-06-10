@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, FlatList, TouchableOpacity, Modal, TextInput, Platform, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Card } from '../../src/components/Card';
 import { Button } from '../../src/components/Button';
 

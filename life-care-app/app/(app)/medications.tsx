@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView, FlatList, TouchableOpacity, Modal, TextInput, Platform, Alert, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as Notifications from 'expo-notifications';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import * as ImagePicker from 'react-native-image-picker';
 import { Card } from '../../src/components/Card';
 import { Button } from '../../src/components/Button';
+import Header from '../../src/components/Header';
 
 interface Medication {
   id: string;
@@ -12,6 +13,7 @@ interface Medication {
   time: string;
   takenToday: boolean;
   color: string;
+  imageUri?: string;
 }
 
 export default function MedicationsScreen() {
@@ -28,7 +30,8 @@ export default function MedicationsScreen() {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newDose, setNewDose] = useState('');
+  const [newImageUri, setNewImageUri] = useState<string | null>(null);
+  // ... existing state definitions remain unchanged
   const [newTime, setNewTime] = useState('');
 
   const scheduleAlarm = async (name: string, dose: string, timeString: string) => {
@@ -52,13 +55,33 @@ export default function MedicationsScreen() {
     }
   };
 
-  const handleSaveMedication = async () => {
+  const handlePickMedicationImage = async () => {
+    const result = await ImagePicker.launchImageLibrary({
+      mediaType: 'photo',
+      maxHeight: 800,
+      maxWidth: 800,
+      selectionLimit: 1,
+    });
+    if (!result.didCancel && result.assets && result.assets.length > 0) {
+      setNewImageUri(result.assets[0].uri);
+    }
+  };
+
     if (!newName || !newTime) {
       Alert.alert('Error', 'يرجى إدخال اسم الدواء والوقت على الأقل');
       return;
     }
 
     const newMed: Medication = {
+      id: Date.now().toString(),
+      name: newName,
+      dose: newDose || '1 pill',
+      time: newTime,
+      takenToday: false,
+      color: '#10B981', // green
+      imageUri: newImageUri || undefined,
+    };
+
       id: Date.now().toString(),
       name: newName,
       dose: newDose || '1 pill',
@@ -95,7 +118,10 @@ export default function MedicationsScreen() {
           <View className="w-12 h-12 rounded-full items-center justify-center mr-3" style={{ backgroundColor: `${item.color}20` }}>
             <Ionicons name="medical" size={24} color={item.color} />
           </View>
-          <View>
+          {item.imageUri ? (
+            <Image source={{ uri: item.imageUri }} className="w-12 h-12 rounded-full mr-2" />
+          ) : null}
+          <View className="flex-1">
             <Text className={`text-lg font-bold text-slate-800 ${item.takenToday ? 'line-through' : ''}`}>{item.name}</Text>
             <Text className="text-sm font-bold text-slate-500">{item.dose} • {item.time}</Text>
           </View>
@@ -115,8 +141,8 @@ export default function MedicationsScreen() {
           onPress={() => markAsTaken(item.id)}
           className={`flex-1 flex-row items-center justify-center py-2 rounded-xl ${item.takenToday ? 'bg-green-100' : 'bg-blue-600'}`}
         >
-          <Ionicons name="checkmark-circle" size={18} color={item.takenToday ? '#10B981' : 'white'} className="mr-1" />
-          <Text className={`font-bold ${item.takenToday ? 'text-green-600' : 'text-white'}`}>{item.takenToday ? 'تم الأخذ' : 'تسجيل أخذ الدواء'}</Text>
+          <Ionicons name="checkmark-circle" size={18} color={item.takenToday ? '#10B981' : 'white'} />
+          <Text className={`font-bold ml-1 ${item.takenToday ? 'text-green-600' : 'text-white'}`}>{item.takenToday ? 'تم الأخذ' : 'تسجيل أخذ الدواء'}</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -131,6 +157,7 @@ export default function MedicationsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
+      <Header />
       <View className="flex-row justify-between items-center px-6 pb-4 border-b border-slate-200 bg-white" style={{ paddingTop: Platform.OS === 'android' ? 40 : 16 }}>
         <View>
           <Text className="text-2xl font-extrabold text-slate-900">مواعيد الأدوية</Text>
@@ -157,7 +184,6 @@ export default function MedicationsScreen() {
         }
       />
 
-      {/* Add Modal */}
       <Modal visible={showAddModal} animationType="slide" presentationStyle="pageSheet">
         <View className="flex-1 bg-slate-50 px-6 pt-8">
           <View className="flex-row justify-between items-center mb-8">

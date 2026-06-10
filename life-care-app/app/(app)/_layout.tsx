@@ -3,7 +3,7 @@ import { Home, Users, UserPlus, Bot, Settings, ClipboardList, FileText, Pill, He
 import { useAuthStore } from '../../src/store/authStore';
 import { useBLEStore } from '../../src/store/bleStore';
 import { View, Text, TouchableOpacity, useColorScheme } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
 import { switchLanguage } from '../../src/i18n';
 

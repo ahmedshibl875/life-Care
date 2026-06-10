@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import Header from '../../src/components/Header';
 import { View, Text, SafeAreaView, ScrollView, RefreshControl, ActivityIndicator, Dimensions, TouchableOpacity, Platform, Vibration, Modal, useColorScheme } from 'react-native';
 import { useAuthStore } from '../../src/store/authStore';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../../src/api/client';
 import { useBLE } from '../../src/hooks/useBLE';
@@ -444,7 +445,7 @@ export default function DashboardScreen() {
         data={data?.activities || []}
         keyExtractor={(item) => item.id}
         renderItem={renderActivity}
-        ListHeaderComponent={HeaderComponent}
+        ListHeaderComponent={<Header />}
         contentContainerStyle={{ padding: 24, paddingTop: Platform.OS === 'android' ? 40 : 20 }}
         showsVerticalScrollIndicator={false}
         initialNumToRender={5}

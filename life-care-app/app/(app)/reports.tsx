@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, Platform, TouchableOpacity, Alert, Dimensions, ActivityIndicator } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { LineChart } from 'react-native-chart-kit';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../../src/api/client';

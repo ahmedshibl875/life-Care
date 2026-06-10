@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, TextInputProps, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface InputProps extends TextInputProps {
   label?: string;

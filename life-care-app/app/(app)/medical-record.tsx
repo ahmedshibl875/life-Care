@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, Platform, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, SafeAreaView, ScrollView, Platform, TouchableOpacity, Alert, Image } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 import { Card } from '../../src/components/Card';
+import Header from '../../src/components/Header';
 import { useAuthStore } from '../../src/store/authStore';
 
 interface MedicalDocument {
@@ -10,6 +12,16 @@ interface MedicalDocument {
   name: string;
   date: string;
   type: 'pdf' | 'image' | 'unknown';
+  uri?: string;
+}
+
+interface Medication {
+  id: string;
+  name: string;
+  dose: string;
+  time: string;
+  takenToday: boolean;
+  color: string;
   uri?: string;
 }
 
@@ -31,17 +43,20 @@ export default function MedicalRecordScreen() {
   ]);
 
   const mockRecord = {
-    bloodType: 'O+',
-    weight: '75 kg',
-    height: '178 cm',
-    allergies: ['البنسلين', 'الفول السوداني'],
-    chronicDiseases: ['السكري (النوع الثاني)', 'ارتفاع ضغط الدم'],
-    surgeries: [
-      { name: 'استئصال الزائدة الدودية', year: '2015' },
-      { name: 'عملية تصحيح النظر', year: '2020' }
-    ],
-    familyHistory: ['أمراض القلب', 'السكري']
-  };
+  bloodType: 'O+',
+  weight: '75 kg',
+  height: '178 cm',
+  allergies: ['البنسلين', 'الفول السوداني'],
+  chronicDiseases: ['السكري (النوع الثاني)', 'ارتفاع ضغط الدم'],
+  surgeries: [
+    { name: 'استئصال الزائدة الدودية', year: '2015' },
+    { name: 'عملية تصحيح النظر', year: '2020' }
+  ],
+  familyHistory: ['أمراض القلب', 'السكري']
+};
+
+const [meds, setMeds] = useState<Medication[]>([]);
+
 
   const handleUploadFile = async () => {
     try {
@@ -100,6 +115,7 @@ export default function MedicalRecordScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
+      <Header />
       <View className="px-6 pb-4 border-b border-slate-200 bg-white" style={{ paddingTop: Platform.OS === 'android' ? 40 : 16 }}>
         <View className="flex-row-reverse items-center justify-between">
           <View className="items-end">
@@ -147,6 +163,40 @@ export default function MedicalRecordScreen() {
         {/* Family History */}
         <TagList title="التاريخ المرضي للعائلة" items={mockRecord.familyHistory} icon="people" color="#10B981" />
 
+        {/* Medication List with Image Support */}
+        <Text className="text-lg font-bold text-slate-800 mt-4 mb-2 text-right">الأدوية</Text>
+        <TouchableOpacity onPress={async () => {
+          const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1,1],
+            quality: 0.7,
+          });
+          if (!result.canceled) {
+            const newMed = { id: Date.now().toString(), name: 'دواء جديد', dose: '', time: '', takenToday: false, color: '#3B82F6', uri: result.assets[0].uri };
+            setMeds(prev => [newMed, ...prev]);
+          }
+        }} className="border-2 border-dashed border-indigo-300 bg-indigo-50/50 rounded-2xl p-4 items-center justify-center mb-4">
+          <Ionicons name="add" size={24} color="#4F46E5" />
+          <Text className="text-indigo-800 font-bold mt-2">إضافة دواء مع صورة</Text>
+        </TouchableOpacity>
+        {meds.map((med) => (
+          <Card key={med.id} className="mb-3 p-4 border-l-4" style={{ borderLeftColor: med.color }}>
+            <View className="flex-row-reverse items-center">
+              {med.uri ? (
+                <Image source={{ uri: med.uri }} className="w-12 h-12 rounded-full mr-3" />
+              ) : (
+                <View className="w-12 h-12 rounded-full bg-gray-100 mr-3 items-center justify-center">
+                  <Ionicons name="image" size={20} color="#6B7280" />
+                </View>
+              )}
+              <View className="flex-1 items-end">
+                <Text className="text-base font-bold text-slate-800">{med.name}</Text>
+                <Text className="text-sm text-slate-500">{med.dose} {med.time}</Text>
+              </View>
+            </View>
+          </Card>
+        ))}
         {/* Attached Files Section */}
         <Text className="text-lg font-bold text-slate-800 mt-4 mb-2 text-right">الأشعة والتحاليل المرفقة</Text>
         
