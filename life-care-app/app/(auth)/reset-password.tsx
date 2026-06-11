@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, Alert, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Button } from '../../src/components/Button';
 import { apiClient } from '../../src/api/client';
 
 export default function ResetPasswordScreen() {
-  const router = useRouter();
+  const navigation = useNavigation<any>();
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,7 +27,7 @@ export default function ResetPasswordScreen() {
     try {
       await apiClient.post(`/auth/reset-password/${code}`, { newPassword });
       Alert.alert('تم بنجاح!', 'تم تغيير كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.');
-      router.replace('/(auth)/login');
+      navigation.replace('Login');
     } catch (error) {
       Alert.alert('خطأ', 'رمز الاستعادة غير صحيح أو منتهي الصلاحية.');
     } finally {
@@ -41,7 +41,7 @@ export default function ResetPasswordScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
         className="flex-1 px-8 justify-center"
       >
-        <TouchableOpacity onPress={() => router.back()} className="absolute top-12 left-6 w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="absolute top-12 left-6 w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm">
           <Ionicons name="arrow-back" size={24} color="#64748B" />
         </TouchableOpacity>
 

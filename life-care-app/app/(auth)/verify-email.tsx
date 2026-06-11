@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, Alert, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Button } from '../../src/components/Button';
 import { apiClient } from '../../src/api/client';
 
 export default function VerifyEmailScreen() {
-  const router = useRouter();
+  const navigation = useNavigation<any>();
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +21,7 @@ export default function VerifyEmailScreen() {
     try {
       await apiClient.post('/auth/verify-otp', { email: email.trim().toLowerCase(), otp: code });
       Alert.alert('تم التأكيد!', 'تم تأكيد حسابك بنجاح. يمكنك الآن تسجيل الدخول.');
-      router.replace('/(auth)/login');
+      navigation.replace('Login');
     } catch (error) {
       Alert.alert('خطأ', 'رمز التفعيل غير صحيح أو منتهي الصلاحية.');
     } finally {
@@ -44,7 +44,7 @@ export default function VerifyEmailScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
         className="flex-1 px-8 justify-center"
       >
-        <TouchableOpacity onPress={() => router.back()} className="absolute top-12 left-6 w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="absolute top-12 left-6 w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm">
           <Ionicons name="arrow-back" size={24} color="#64748B" />
         </TouchableOpacity>
 

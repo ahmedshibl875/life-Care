@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiClient } from '../../src/api/client';
 
 export default function OTPScreen() {
-  const router = useRouter();
+  const navigation = useNavigation<any>();
   const params = useLocalSearchParams();
   const { login } = useAuthStore();
   
@@ -67,7 +67,7 @@ export default function OTPScreen() {
       console.log('[DEBUG] OTP verification response received:', verifyResponse.data);
 
       Alert.alert('تم بنجاح', 'تم تأكيد الحساب بنجاح! يمكنك الآن تسجيل الدخول.', [
-        { text: 'موافق', onPress: () => router.replace('/(auth)/login') }
+        { text: 'موافق', onPress: () => navigation.replace('Login') }
       ]);
       
     } catch (error: any) {
@@ -109,7 +109,7 @@ export default function OTPScreen() {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-white">
       <View className="flex-1 px-6 pt-20">
         
-        <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 rounded-full bg-slate-100 items-center justify-center mb-6">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 rounded-full bg-slate-100 items-center justify-center mb-6">
           <Ionicons name="arrow-back" size={24} color="#0F172A" />
         </TouchableOpacity>
 

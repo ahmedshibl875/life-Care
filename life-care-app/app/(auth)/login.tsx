@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator, Alert, Image } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -9,7 +9,7 @@ import { useAuthStore } from '../../src/store/authStore';
 import { apiClient } from '../../src/api/client';
 
 export default function LoginScreen() {
-  const router = useRouter();
+  const navigation = useNavigation<any>();
   const { login } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -54,7 +54,7 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-white">
       <View className="flex-1 px-6 pt-20">
-        <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 rounded-full bg-slate-100 items-center justify-center mb-6">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 rounded-full bg-slate-100 items-center justify-center mb-6">
           <Ionicons name="arrow-back" size={24} color="#0F172A" />
         </TouchableOpacity>
 
@@ -134,7 +134,7 @@ export default function LoginScreen() {
 
         <View className="flex-row justify-center items-center mt-auto mb-10">
           <Text className="text-slate-500 text-base">Don't have an account? </Text>
-          <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
+          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
             <Text className="text-blue-600 text-base font-bold">Sign Up</Text>
           </TouchableOpacity>
         </View>

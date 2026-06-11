@@ -1,23 +1,30 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, Pressable } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../src/store/authStore';
 
 export default function Header() {
   const [menuVisible, setMenuVisible] = useState(false);
-  const router = useRouter();
+  const navigation = useNavigation<any>();
   const { logout } = useAuthStore();
 
   const handleNavigate = (path: string) => {
     setMenuVisible(false);
-    router.push(path);
+    let screenName = 'Dashboard';
+    if (path.includes('profile')) {
+      screenName = 'Profile';
+    } else if (path.includes('medications')) {
+      screenName = 'Medications';
+    } else if (path.includes('add-contact')) {
+      screenName = 'AddCompanionPatient';
+    }
+    navigation.navigate(screenName);
   };
 
   const handleLogout = async () => {
     setMenuVisible(false);
     await logout();
-    // _layout listener will redirect to login
   };
 
   return (

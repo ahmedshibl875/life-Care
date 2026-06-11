@@ -7,12 +7,12 @@ import { useAuthStore } from '../../src/store/authStore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Card } from '../../src/components/Card';
 import { Button } from '../../src/components/Button';
-import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const { user, logout } = useAuthStore();
-  const router = useRouter();
+  const navigation = useNavigation<any>();
   const [isRtl, setIsRtl] = useState(false); // Can be linked to global language state later
 
   const handleLogout = () => {
